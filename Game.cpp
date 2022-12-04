@@ -1,5 +1,6 @@
 // @author: Amremad719
 #include "Game.h"
+#include "SQL.h"
 #define s ' '
 #pragma warning(disable : 4996)
 using namespace std;
@@ -49,87 +50,104 @@ void Game::initText()
     //globally used text object
     this->text.setFont(font);
     this->text.setCharacterSize(50);
-    this->text.setColor(Color::Black);
+    this->text.setColor(TextColor);
     this->text.setString(" ");
     
     //time counter text
     this->timeText.setFont(font);
     this->timeText.setCharacterSize(gridSize / 10);
-    this->timeText.setColor(Color::Black);
+    this->timeText.setColor(TextColor);
     this->timeText.setPosition(gridSize - 45, gridSize + (LineThickness * 7) - 10 + gridPadding);
     this->timeText.setString("0:00");
    
     //Sudoku text on the top of the page in game
     this->GameHudText.setFont(font);
     this->GameHudText.setCharacterSize(50);
-    this->GameHudText.setColor(Color::Black);
+    this->GameHudText.setColor(TextColor);
     this->GameHudText.setPosition(230, -7);
     this->GameHudText.setString("Sudoku");
 
     //mistakes counter in game
     this->Mistakes.setFont(font);
     this->Mistakes.setPosition(230, -7);
-    this->Mistakes.setColor(Color::Black);
+    this->Mistakes.setColor(TextColor);
     this->Mistakes.setCharacterSize(gridSize / 20);
     this->Mistakes.setPosition(7, gridSize + (LineThickness * 7) - 3 + gridPadding);
 }
 
 void Game::initMenu()
 {
-    Vector2f Playpos = Vector2f(193, 270);
-    Vector2f Settingspos = Vector2f(193, Playpos.y + 150);
-    Vector2f Exitpos = Vector2f(193, Settingspos.y + 150);
+    Vector2f Playpos = Vector2f(193, 220);
+    Vector2f Settingspos = Vector2f(193, Playpos.y + 130);
+    Vector2f Statisticspos = Vector2f(193, Settingspos.y + 130);
+    Vector2f Exitpos = Vector2f(193, Statisticspos.y + 130);
 
 //button squares
 
     //play
-    MainMenuPlayButton.first.setFillColor(Color::White);
+    MainMenuPlayButton.first.setFillColor(normalColor);
     MainMenuPlayButton.first.setPosition(Playpos);
     MainMenuPlayButton.first.setSize(Vector2f(200, 70));
     MainMenuPlayButton.first.setOutlineThickness(7);
-    MainMenuPlayButton.first.setOutlineColor(Color::Black);
+    MainMenuPlayButton.first.setOutlineColor(TextColor);
 
     //Exit
-    MainMenuExitButton.first.setFillColor(Color::White);
-    MainMenuExitButton.first.setPosition(Exitpos);
+    MainMenuExitButton.first.setFillColor(normalColor);
+    //temporarly Statisticspos because not finished yet supposed to be Exitpos
+    MainMenuExitButton.first.setPosition(Statisticspos);
     MainMenuExitButton.first.setSize(Vector2f(200, 70));
     MainMenuExitButton.first.setOutlineThickness(7);
-    MainMenuExitButton.first.setOutlineColor(Color::Black);
+    MainMenuExitButton.first.setOutlineColor(TextColor);
 
     //Settings
-    MainMenuSettingsButton.first.setFillColor(Color::White);
+    MainMenuSettingsButton.first.setFillColor(normalColor);
     MainMenuSettingsButton.first.setPosition(Settingspos);
     MainMenuSettingsButton.first.setSize(Vector2f(200, 70));
     MainMenuSettingsButton.first.setOutlineThickness(7);
-    MainMenuSettingsButton.first.setOutlineColor(Color::Black);
+    MainMenuSettingsButton.first.setOutlineColor(TextColor);
+
+    //Statistics
+    StatisticsButton.first.setFillColor(normalColor);
+    StatisticsButton.first.setPosition(Statisticspos);
+    StatisticsButton.first.setSize(Vector2f(200, 70));
+    StatisticsButton.first.setOutlineThickness(7);
+    StatisticsButton.first.setOutlineColor(TextColor);
 
 //button text
 
     //Play
-    MainMenuPlayButton.second.setFillColor(Color::Black);
+    MainMenuPlayButton.second.setFillColor(TextColor);
     MainMenuPlayButton.second.setCharacterSize(70);
     MainMenuPlayButton.second.setPosition(Playpos.x + 47, Playpos.y - 10);
     MainMenuPlayButton.second.setString("Play");
     MainMenuPlayButton.second.setFont(font);
 
     //Exit
-    MainMenuExitButton.second.setFillColor(Color::Black);
+    MainMenuExitButton.second.setFillColor(TextColor);
     MainMenuExitButton.second.setCharacterSize(70);
-    MainMenuExitButton.second.setPosition(Exitpos.x + 52, Exitpos.y - 10);
+    //temporarly Statisticspos because not finished yet supposed to be Exitpos
+    MainMenuExitButton.second.setPosition(Statisticspos.x + 52, Statisticspos.y - 10);
     MainMenuExitButton.second.setString("Exit");
     MainMenuExitButton.second.setFont(font);
 
     //Settings
-    MainMenuSettingsButton.second.setFillColor(Color::Black);
+    MainMenuSettingsButton.second.setFillColor(TextColor);
     MainMenuSettingsButton.second.setCharacterSize(65);
     MainMenuSettingsButton.second.setPosition(Settingspos.x + 7, Settingspos.y - 8);
     MainMenuSettingsButton.second.setString("Settings");
     MainMenuSettingsButton.second.setFont(font);
 
+    //Statistics
+    StatisticsButton.second.setFillColor(TextColor);
+    StatisticsButton.second.setCharacterSize(55);
+    StatisticsButton.second.setPosition(Statisticspos.x + 7, Statisticspos.y - 1);
+    StatisticsButton.second.setString("Statistics");
+    StatisticsButton.second.setFont(font);
+
 //Title
-    MainMenuSudokuText.setFillColor(Color::Black);
+    MainMenuSudokuText.setFillColor(TextColor);
     MainMenuSudokuText.setCharacterSize(140);
-    MainMenuSudokuText.setPosition(125, 40);
+    MainMenuSudokuText.setPosition(125, 20);
     MainMenuSudokuText.setString("Sudoku");
     MainMenuSudokuText.setFont(font);
 }
@@ -140,7 +158,7 @@ void Game::initgrid()
     //Squares
 
     float x = LineThickness, y = LineThickness;
-    rect.setFillColor(Color::White);
+    rect.setFillColor(normalColor);
     Vector2f pos = {0, gridPadding * 1.0f}, size = {gridSize / 9, gridSize / 9 };
     for (int i = 0; i < 9; i++) 
     {
@@ -185,7 +203,7 @@ void Game::initgrid()
         GridSquares.push_back(vec);
     }
 
-    rect.setFillColor(Color(100, 100, 100, 255));
+    rect.setFillColor(internalGridLinesColor);
     
     //thin Lines
     int xpos = 0, ypos = gridPadding;
@@ -215,7 +233,7 @@ void Game::initgrid()
 
     //thick lines
     xpos = 0, ypos = gridPadding;
-    rect.setFillColor(Color::Black);
+    rect.setFillColor(ExternalGridLinesColor);
     for (int i = 1; i <= 4; i++) 
     {
         //Vertical Lines
@@ -236,50 +254,50 @@ void Game::initgrid()
 
 void Game::initDifficulty()
 {
-    Vector2f Easypos = Vector2f(193, 200);
-    Vector2f Mediumpos = Vector2f(193, 350);
-    Vector2f Hardpos = Vector2f(193, 500);
+    Vector2f Easypos = Vector2f(193, 220);
+    Vector2f Mediumpos = Vector2f(193, Easypos.y + 130);
+    Vector2f Hardpos = Vector2f(193, Mediumpos.y + 130);
 
 //Buttons rectangle
-    Easy.first.setFillColor(Color::White);
+    Easy.first.setFillColor(normalColor);
     Easy.first.setPosition(Easypos);
     Easy.first.setSize(Vector2f(200, 70));
     Easy.first.setOutlineThickness(7);
-    Easy.first.setOutlineColor(Color::Black);
+    Easy.first.setOutlineColor(TextColor);
     
-    Medium.first.setFillColor(Color::White);
+    Medium.first.setFillColor(normalColor);
     Medium.first.setPosition(Mediumpos);
     Medium.first.setSize(Vector2f(200, 70));
     Medium.first.setOutlineThickness(7);
-    Medium.first.setOutlineColor(Color::Black);
+    Medium.first.setOutlineColor(TextColor);
    
-    Hard.first.setFillColor(Color::White);
+    Hard.first.setFillColor(normalColor);
     Hard.first.setPosition(Hardpos);
     Hard.first.setSize(Vector2f(200, 70));
     Hard.first.setOutlineThickness(7);
-    Hard.first.setOutlineColor(Color::Black);
+    Hard.first.setOutlineColor(TextColor);
     
 //Buttons text
-    Easy.second.setFillColor(Color::Black);
+    Easy.second.setFillColor(TextColor);
     Easy.second.setCharacterSize(70);
     Easy.second.setPosition(Easypos.x + 47, Easypos.y - 10);
     Easy.second.setString("Easy");
     Easy.second.setFont(font);
     
-    Medium.second.setFillColor(Color::Black);
+    Medium.second.setFillColor(TextColor);
     Medium.second.setCharacterSize(70);
     Medium.second.setPosition(Mediumpos.x + 15, Mediumpos.y - 10);
     Medium.second.setString("Medium");
     Medium.second.setFont(font);
     
-    Hard.second.setFillColor(Color::Black);
+    Hard.second.setFillColor(TextColor);
     Hard.second.setCharacterSize(70);
     Hard.second.setPosition(Hardpos.x + 42, Hardpos.y - 10);
     Hard.second.setString("Hard");
     Hard.second.setFont(font);
 
 //Title
-    Difficulty.setFillColor(Color::Black);
+    Difficulty.setFillColor(TextColor);
     Difficulty.setCharacterSize(90);
     Difficulty.setPosition(40, 40);
     Difficulty.setString("Select Difficulty");
@@ -292,9 +310,9 @@ void Game::initNumbers()
     Vector2f pos = { 15, gridSize + (LineThickness * 7) + gridPadding + 55};
 
     //intitialise the rectangle
-    rect.setFillColor(NumbersColor);
+    rect.setFillColor(normalColor);
     rect.setOutlineThickness(5);
-    rect.setOutlineColor(Color::Black);
+    rect.setOutlineColor(ExternalGridLinesColor);
     rect.setSize(Vector2f(Numsize, Numsize));
 
     for (int i = 1; i <= 9; i++) {
@@ -371,6 +389,12 @@ void Game::initMusic() {
     if (currMusicStatus == Active) Music.play();
 }
 
+void Game::initStatisticsDatabase()
+{
+    StatisticsDatabase.open("StatisticsDatabase.csv", fstream::app | fstream::in | fstream::out);
+    //cout << StatisticsDatabase.is_open();
+}
+
 void Game::initSettings()
 {
 //Title
@@ -379,7 +403,7 @@ void Game::initSettings()
     SettingsText.setCharacterSize(70);
     SettingsText.setPosition(180, -15);
     SettingsText.setString("Settings");
-    SettingsText.setFillColor(Color::Black);
+    SettingsText.setFillColor(TextColor);
 
     Vector2f pos = { 30, 100 };
 
@@ -387,13 +411,19 @@ void Game::initSettings()
     settingsWindowSize.setCharacterSize(45);
     settingsWindowSize.setPosition(pos);
     settingsWindowSize.setString("Window Size");
-    settingsWindowSize.setFillColor(Color::Black);
+    settingsWindowSize.setFillColor(TextColor);
 
-//Large Window Button
+    ThemeText.setFont(font);
+    ThemeText.setCharacterSize(45);
+    ThemeText.setPosition(pos.x, pos.y + 100);
+    ThemeText.setString("Theme");
+    ThemeText.setFillColor(TextColor);
+
+//Small Window Button
     //rectangle
     WindowSmall.first.setOutlineThickness(5);
-    WindowSmall.first.setOutlineColor(Color::Black);
-    WindowSmall.first.setFillColor((currWindowSize == small ? SelectColor:Color::White));
+    WindowSmall.first.setOutlineColor(TextColor);
+    WindowSmall.first.setFillColor((currWindowSize == small ? SelectColor:normalColor));
     WindowSmall.first.setPosition(pos.x + 300, pos.y + 7);
     WindowSmall.first.setSize(Vector2f(90, 40));
     //text
@@ -401,13 +431,13 @@ void Game::initSettings()
     WindowSmall.second.setCharacterSize(40);
     WindowSmall.second.setPosition(pos.x + 300 + 5, pos.y + 1);
     WindowSmall.second.setString("Small");
-    WindowSmall.second.setFillColor(Color::Black);
+    WindowSmall.second.setFillColor(TextColor);
 
 //Large Window Button
     //rectangle
     WindowLarge.first.setOutlineThickness(5);
-    WindowLarge.first.setOutlineColor(Color::Black);
-    WindowLarge.first.setFillColor((currWindowSize == large ? SelectColor : Color::White));
+    WindowLarge.first.setOutlineColor(TextColor);
+    WindowLarge.first.setFillColor((currWindowSize == large ? SelectColor : normalColor));
     WindowLarge.first.setPosition(pos.x + 420, pos.y + 7);
     WindowLarge.first.setSize(Vector2f(90, 40));
 
@@ -416,20 +446,47 @@ void Game::initSettings()
     WindowLarge.second.setCharacterSize(40);
     WindowLarge.second.setPosition(pos.x + 420 + 5, pos.y + 1);
     WindowLarge.second.setString("Large");
-    WindowLarge.second.setFillColor(Color::Black);
+    WindowLarge.second.setFillColor(TextColor);
+
+//Dark Theme Button
+    //rectangle
+    ThemeDark.first.setOutlineThickness(5);
+    ThemeDark.first.setOutlineColor(TextColor);
+    ThemeDark.first.setFillColor(DarkThemeActive ? SelectColor : normalColor);
+    ThemeDark.first.setPosition(pos.x + 300, pos.y + 7 + 101);
+    ThemeDark.first.setSize(Vector2f(90, 40));
+    //text
+    ThemeDark.second.setFont(font);
+    ThemeDark.second.setCharacterSize(40);
+    ThemeDark.second.setPosition(pos.x + 305 + 6, pos.y + 100 + 3);
+    ThemeDark.second.setString("Dark");
+    ThemeDark.second.setFillColor(TextColor);
+
+//Light Theme Button
+    //rectangle
+    ThemeLight.first.setOutlineThickness(5);
+    ThemeLight.first.setOutlineColor(TextColor);
+    ThemeLight.first.setFillColor(DarkThemeActive ? normalColor : SelectColor);
+    ThemeLight.first.setPosition(pos.x + 420, pos.y + 7 + 101);
+    ThemeLight.first.setSize(Vector2f(90, 40));
+    //text
+    ThemeLight.second.setFont(font);
+    ThemeLight.second.setCharacterSize(40);
+    ThemeLight.second.setPosition(pos.x + 430, pos.y + 100 + 3);
+    ThemeLight.second.setString("Light");
+    ThemeLight.second.setFillColor(TextColor);
 }
 
 void Game::initGameOver()
 {
-    Color transBlack = Color(0, 0, 0, 0);
-    Color transGrey = Color(220, 220, 220, 0);
+    
 
     GameOverText.setFont(font);
-    GameOverText.setFillColor(transBlack);
+    GameOverText.setFillColor(transparentBlack);
 
     GameOverDesc.setFont(font);
     GameOverDesc.setCharacterSize(30);
-    GameOverDesc.setFillColor(transBlack);
+    GameOverDesc.setFillColor(transparentBlack);
 
     Vector2f RestartPos = { 196, 275 };
     Vector2f QuitPos = { 196, 525 };
@@ -439,13 +496,13 @@ void Game::initGameOver()
     PlayAgain.first.setPosition(RestartPos);
     PlayAgain.first.setOutlineThickness(5);
     PlayAgain.first.setSize(Vector2f(190, 60));
-    PlayAgain.first.setOutlineColor(transBlack);
-    PlayAgain.first.setFillColor(transGrey);
+    PlayAgain.first.setOutlineColor(transparentBlack);
+    PlayAgain.first.setFillColor(transparentGrey);
     //text
     PlayAgain.second.setFont(font);
     PlayAgain.second.setCharacterSize(50);
     PlayAgain.second.setString("Play Again");
-    PlayAgain.second.setFillColor(transBlack);
+    PlayAgain.second.setFillColor(transparentBlack);
     PlayAgain.second.setPosition(RestartPos.x + 6, RestartPos.y);
 
 
@@ -453,27 +510,37 @@ void Game::initGameOver()
     MainMenu.first.setPosition(MainMenuPos);
     MainMenu.first.setOutlineThickness(5);
     MainMenu.first.setSize(Vector2f(190, 60));
-    MainMenu.first.setOutlineColor(transBlack);
-    MainMenu.first.setFillColor(transGrey);
+    MainMenu.first.setOutlineColor(transparentBlack);
+    MainMenu.first.setFillColor(transparentGrey);
     //text
     MainMenu.second.setFont(font);
     MainMenu.second.setCharacterSize(50);
     MainMenu.second.setString("Main Menu");
-    MainMenu.second.setFillColor(transBlack);
+    MainMenu.second.setFillColor(transparentBlack);
     MainMenu.second.setPosition(MainMenuPos.x + 8, MainMenuPos.y);
 
     //rectangle
     Quit.first.setPosition(QuitPos);
     Quit.first.setOutlineThickness(5);
     Quit.first.setSize(Vector2f(190, 60));
-    Quit.first.setOutlineColor(transBlack);
-    Quit.first.setFillColor(transGrey);
+    Quit.first.setOutlineColor(transparentBlack);
+    Quit.first.setFillColor(transparentGrey);
     //text
     Quit.second.setFont(font);
     Quit.second.setCharacterSize(50);
     Quit.second.setString("Quit");
-    Quit.second.setFillColor(transBlack);
+    Quit.second.setFillColor(transparentBlack);
     Quit.second.setPosition(QuitPos.x + 58, QuitPos.y);
+}
+
+void Game::initAll()
+{
+    this->initText();
+    this->initMenu();
+    this->initgrid();
+    this->initNumbers();
+    this->initSettings();
+    this->initGameOver();
 }
 
 //Highlighters
@@ -524,6 +591,52 @@ void Game::GameOverHighlight()
     }
 }
 
+void Game::highlightStatisticsButton()
+{
+    bool withinAnyButton = 0;
+    Vector2f pos = GetMousePos();
+
+    //Back Arrow
+    if (withinRect(pos, BackArrow.getGlobalBounds()))
+    {
+        BackArrow.setTexture(BackArrowHighlightedText);
+        SelectedStatisticsButton = StatBack;
+        withinAnyButton = 1;
+    }
+    else
+    {
+        BackArrow.setTexture(BackArrowText);
+    }
+
+    //Music 
+    if (withinRect(pos, MusicIcon.getGlobalBounds()))
+    {
+        if (currMusicStatus == Mute)
+        {
+            MusicIcon.setTexture(MusicMutedHighlightedTexture);
+        }
+        else
+        {
+            MusicIcon.setTexture(MusicHighlightedTexture);
+        }
+        SelectedStatisticsButton = StatMute;
+        withinAnyButton = 1;
+    }
+    else
+    {
+        if (currMusicStatus == Mute)
+        {
+            MusicIcon.setTexture(MusicMutedTexture);
+        }
+        else
+        {
+            MusicIcon.setTexture(MusicTexture);
+        }
+    }
+
+    if (!withinAnyButton) SelectedStatisticsButton = Statnone;
+}
+
 void Game::highlightMenuButton()
 {
     Vector2f mousePos = GetMousePos();
@@ -538,7 +651,7 @@ void Game::highlightMenuButton()
     }
     else 
     {
-        MainMenuPlayButton.first.setFillColor(Color::White);
+        MainMenuPlayButton.first.setFillColor(normalColor);
     }
 
     //Settings
@@ -550,7 +663,19 @@ void Game::highlightMenuButton()
     }
     else 
     {
-        MainMenuSettingsButton.first.setFillColor(Color::White);
+        MainMenuSettingsButton.first.setFillColor(normalColor);
+    }
+
+    //Statistics
+    if (withinRect(mousePos, StatisticsButton.first.getGlobalBounds()))
+    {
+        StatisticsButton.first.setFillColor(highlightColor);
+        SelectedMenuButton = MenuStatistics;
+        withinAnyButton = 1;
+    }
+    else
+    {
+        StatisticsButton.first.setFillColor(normalColor);
     }
 
     //Exit
@@ -562,7 +687,7 @@ void Game::highlightMenuButton()
     }
     else 
     {
-        MainMenuExitButton.first.setFillColor(Color::White);
+        MainMenuExitButton.first.setFillColor(normalColor);
     }
 
     //Music 
@@ -680,7 +805,7 @@ void Game::highlightDiffButton()
     }
     else 
     {
-        Easy.first.setFillColor(Color::White);
+        Easy.first.setFillColor(normalColor);
     }
 
     //Medium
@@ -692,7 +817,7 @@ void Game::highlightDiffButton()
     }
     else 
     {
-        Medium.first.setFillColor(Color::White);
+        Medium.first.setFillColor(normalColor);
     }
 
     //Hard
@@ -704,7 +829,7 @@ void Game::highlightDiffButton()
     }
     else 
     {
-        Hard.first.setFillColor(Color::White);
+        Hard.first.setFillColor(normalColor);
     }
 
     //Back Arrow
@@ -842,6 +967,18 @@ void Game::highlightSettings()
     }
 
     if (!withinAnyButton) SelectedSettingsButton = Settingsnone;
+}
+
+void Game::removeHighlight()
+{
+    for (int i = 0; i < 9; i++)
+    {
+        for (int j = 0; j < 9; j++)
+        {
+            Color color = isPreFilled[i][j] ? preFilledColor : normalColor;
+            GridSquares[i][j].first.setFillColor(color);
+        }
+    }
 }
 
 //Gameplay logic
@@ -1219,7 +1356,7 @@ void Game::runGame(enum Difficulty diff)
     if (SelectedSquare.first != -1) 
     {
         highlight(SelectedSquare.first, SelectedSquare.second, 1);
-        GridSquares[SelectedSquare.first][SelectedSquare.second].first.setFillColor(Color::White);
+        GridSquares[SelectedSquare.first][SelectedSquare.second].first.setFillColor(normalColor);
         SelectedSquare = { -1, -1 };
     }
 
@@ -1396,6 +1533,36 @@ bool Game::fadeImage()
     return 1;
 }
 
+void Game::updateTimes()
+{
+    //get data from file
+    StatisticsDatabase.sync();
+    string x;
+    while (getline(StatisticsDatabase, x))
+    {
+        TimesSet.insert(x);
+    }
+
+    //initialise text
+    text.setCharacterSize(80);
+
+    //put the data into the global vector
+    Vector2f pos = { 190, 50 };
+    auto it = TimesSet.begin();
+    for (int i = 0; i < 10 && it != TimesSet.end(); i++, it++) {
+        text.setPosition(pos);
+        string temp;
+        stringstream ss;
+        ss << i + 1;
+        ss >> temp;
+        temp += "- ";
+        temp += *it;
+        text.setString(temp);
+        topTenTimes.push_back(text);
+        pos.y += 100;
+    }
+}
+
 //Selecting / editing
 void Game::SelectSquare(int indr, int indc)
 {
@@ -1423,7 +1590,7 @@ void Game::SelectSquare(int indr, int indc)
 
 void Game::SelectNumber(int ind)
 {
-    NumPadNumbers[ind].first.setFillColor(Color(180, 180, 180, 255));
+    NumPadNumbers[ind].first.setFillColor(SelectColor);
 
     string x;
     x.push_back(ind + 1 + '0');
@@ -1434,9 +1601,10 @@ void Game::SelectNumber(int ind)
 
 void Game::editSquare(string num)
 {
-
     if (SelectedSquare.first != -1) {
+        if (num == GridSquares[SelectedSquare.first][SelectedSquare.second].second.getString()) return;
         
+
         //return if trying to slect a pre filled cell or a valid one
         string squareNumString = GridSquares[SelectedSquare.first][SelectedSquare.second].second.getString();
         if (squareNumString != " " && stoi(squareNumString) == solution[SelectedSquare.first][SelectedSquare.second]) return;
@@ -1462,6 +1630,10 @@ void Game::editSquare(string num)
             EmptyCellsRemaining--;
             if (EmptyCellsRemaining <= 0)
             {
+                //Save time
+                string TimeString = timeText.getString();
+                StatisticsDatabase << TimeString << endl;
+
                 //update and render new frame before blurring it
                 update();
 
@@ -1486,6 +1658,10 @@ void Game::editSquare(string num)
         //if enough mistakes made go to game over screen
         if (mistakesMade > 3) 
         {
+            //Save time fo statistics database
+            string TimeString = timeText.getString();
+            StatisticsDatabase << TimeString << endl;
+
             //update and render new frame before blurring it
             update();
 
@@ -1509,6 +1685,7 @@ void Game::editSquare(string num)
 
 void Game::Select(Vector2f Pos)
 {
+    if(SelectedSquare.first != -1) highlight(SelectedSquare.first, SelectedSquare.second, 1);
     for (int i = 0; i < 9; i++) 
     {
         for (int j = 0; j < 9; j++) 
@@ -1552,15 +1729,29 @@ void Game::SelectSettingsButton(Vector2f pos)
     {
         currWindowSize = small;
         WindowSmall.first.setFillColor(SelectColor);
-        WindowLarge.first.setFillColor(Color::White);
+        WindowLarge.first.setFillColor(normalColor);
         this->window->setSize(Vector2u(450 + (LineThickness * 7), 450 + (LineThickness * 7) + 125 + gridPadding));
     }
     if (withinRect(pos, WindowLarge.first.getGlobalBounds())) 
     {
         currWindowSize = large;
-        WindowSmall.first.setFillColor(Color::White);
+        WindowSmall.first.setFillColor(normalColor);
         WindowLarge.first.setFillColor(SelectColor);
         this->window->setSize(Vector2u(540 + (LineThickness * 7), 540 + (LineThickness * 7) + 125 + gridPadding));
+    }
+    if (withinRect(pos, ThemeDark.first.getGlobalBounds()))
+    {
+        DarkThemeActive = 1;
+        ToggleDarkMode(1);
+        ThemeLight.first.setFillColor(normalColor);
+        ThemeDark.first.setFillColor(SelectColor);
+    }
+    if (withinRect(pos, ThemeLight.first.getGlobalBounds()))
+    {
+        DarkThemeActive = 0;
+        ToggleDarkMode(0);
+        ThemeDark.first.setFillColor(normalColor);
+        ThemeLight.first.setFillColor(SelectColor);
     }
 }
 
@@ -1589,21 +1780,49 @@ void Game::takeScreenShot()
     ScreenShot.saveToFile("ScreenShot.png");
 }
 
+void Game::ToggleDarkMode(bool DarkMode)
+{
+    internalGridLinesColor = (DarkThemeActive ? Color(100, 100, 100, 255) : Color(100, 100, 100, 255));
+    ExternalGridLinesColor = (DarkThemeActive ? Color(120, 120, 120) : Color::Black);
+    highlightColor = (DarkThemeActive ? Color(35, 35, 35) : Color(220, 220, 220));
+    preFilledColor = (DarkThemeActive ? Color(20, 20, 20) : Color(235, 235, 235));
+    NumbersColor = (DarkThemeActive ? Color(10, 10, 10) : Color(220, 220, 220));
+    invalidColor = (DarkThemeActive ? Color(75, 30, 30) : Color(255, 170, 170));
+    SelectColor = (DarkThemeActive ? Color(35, 35, 35) : Color(190, 190, 190));
+    SelectBlue = (DarkThemeActive ? Color(30, 30, 75) : Color(200, 200, 255));
+    TextColor = (DarkThemeActive ? Color(230, 230, 230) : Color::Black);
+    normalColor = (DarkThemeActive ? Color(10, 10, 10) : Color::White);
+    transparentBlack = (DarkThemeActive ? Color(230, 230, 230, 0) : Color(0, 0, 0, 0));
+    transparentGrey = (DarkThemeActive ? Color(10, 10, 10, 0) : Color(220, 220, 220, 0));
+    GridSquares.clear();
+    NumPositions.clear();
+    NumPadNumbers.clear();
+    GridLines.clear();
+    NumbersCounter.clear();
+    if (DarkThemeActive) {
+        BackArrowText.loadFromFile("Textures/ArrowLight.png");
+        MusicTexture.loadFromFile("Textures/MusicLight.png");
+        MusicMutedTexture.loadFromFile("Textures/MusicMutedLight.png");
+    }
+    else {
+        BackArrowText.loadFromFile("Textures/Arrow.png");
+        MusicTexture.loadFromFile("Textures/Music.png");
+        MusicMutedTexture.loadFromFile("Textures/MusicMuted.png");
+    } 
+    initAll();
+}
+
 // Constructor & Destructor
 
 Game::Game()
 {
     this->initTextures();
-    this->initMusic();
+    ToggleDarkMode(DarkThemeActive);
     this->initvar();
-    this->initfont();
-    this->initText();
-    this->initMenu();
-    this->initgrid();
-    this->initNumbers();
-    this->initSettings();
     this->initwindow();
-    this->initGameOver();
+    this->initMusic();
+    this->initfont();
+    this->initStatisticsDatabase();
 }
 
 Game::~Game()
@@ -1768,6 +1987,10 @@ void Game::pollMenuEvents()
                             case Menumusic:
                                 ToggleMusic();
                                 break;
+                            case MenuStatistics:
+                                updateTimes();
+                                currScreen = Statistics;
+                                break;
                             default:
                                 break;
                         }
@@ -1873,6 +2096,41 @@ void Game::pollSettingsEvents()
     }
 }
 
+void Game::pollStatisticsEvents()
+{
+    while (this->window->pollEvent(ev))
+    {
+        switch (ev.type)
+        {
+            case Event::Closed:
+                this->window->close();
+                break;
+            case Event::MouseButtonPressed:
+                switch (ev.mouseButton.button)
+                {
+                    case Mouse::Left:
+                        switch (SelectedStatisticsButton)
+                        {
+                            case Game::StatBack:
+                                currScreen = menu;
+                                break;
+                            case Game::StatMute:
+                                ToggleMusic();
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            default:
+                break;
+        }
+    }
+}
+
 //updating
 void Game::updateMenu()
 {
@@ -1923,6 +2181,12 @@ void Game::updateGamePlay()
     this->updateCounter();
 }
 
+void Game::updateStatistics()
+{
+    pollStatisticsEvents();
+    highlightStatisticsButton();
+}
+
 void Game::update()
 {
     switch (currScreen)
@@ -1939,6 +2203,8 @@ void Game::update()
         case Game::settings:
             this->updateSettings();
             break;
+        case Game::Statistics:
+            this->updateStatistics();
         default:
             break;
     }
@@ -1954,6 +2220,8 @@ void Game::renderMenu()
     this->window->draw(MainMenuSettingsButton.second);
     this->window->draw(MainMenuExitButton.first);
     this->window->draw(MainMenuExitButton.second);
+    /*this->window->draw(StatisticsButton.first);
+    this->window->draw(StatisticsButton.second);*/
 }
 
 void Game::renderGame()
@@ -1970,6 +2238,14 @@ void Game::renderGame()
             break;
         default:
             break;
+    }
+}
+
+void Game::renderStatistics()
+{
+    this->window->draw(BackArrow);
+    for (auto it : topTenTimes) {
+        this->window->draw(it);
     }
 }
 
@@ -1995,6 +2271,11 @@ void Game::renderSettings()
     this->window->draw(WindowLarge.first);
     this->window->draw(WindowLarge.second);
     this->window->draw(settingsWindowSize);
+    this->window->draw(ThemeText);
+    this->window->draw(ThemeLight.first);
+    this->window->draw(ThemeLight.second);
+    this->window->draw(ThemeDark.first);
+    this->window->draw(ThemeDark.second);
 }
 
 void Game::renderGameOver()
@@ -2041,7 +2322,7 @@ void Game::renderGamePlay()
 void Game::render()
 {
     
-    this->window->clear(Color::White);
+    this->window->clear(normalColor);
 
     this->window->draw(MusicIcon);
     switch (currScreen)
@@ -2058,6 +2339,8 @@ void Game::render()
         case Game::settings:
             this->renderSettings();
             break;
+        case Game::Statistics:
+            this->renderStatistics();
         default:
             break;
     }

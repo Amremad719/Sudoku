@@ -29,6 +29,9 @@
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SQL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SFML.rc">
@@ -36,22 +39,10 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\..\Icon.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="..\..\icon2.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\..\handmade.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\..\icon1.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="icon1.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\..\handmade.ico">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="..\..\pleasework.bmp">

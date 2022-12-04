@@ -10,7 +10,7 @@ using namespace sf;
 
  int main()
  {
-	srand(time(NULL));
+	 srand(time(NULL));
 	//bool opened = freopen("log.txt", "w", stdout);
 
 	//Init Game

@@ -17,10 +17,11 @@ private:
 
     //enums decleration
     enum GameOverButton {GameOverPlayAgain, GameOverMainMenu, GameOverQuit, GameOvernone};
+    enum MenuButtons {play, exit, MenuStatistics, Menusettings, Menumusic, Menunone};
     enum Difficulty {easy, medium, hard, Diffback, Diffmusic, Diffnone};
-    enum MenuButtons {play, exit, Menusettings, Menumusic, Menunone};
     enum SettingsButtons {Settingsback, Settingsmusic, Settingsnone};
-    enum Screen {menu, game, difficulty, settings};
+    enum Screen {menu, game, Statistics, difficulty, settings};
+    enum StatisticsButton {Statnone, StatBack, StatMute};
     enum GameScreen {GameOver, GameWin, GamePlay};
     enum GameHud {Gameback, Gamemusic, Gamenone};
     enum MusicStatus {Active, Mute};
@@ -29,10 +30,11 @@ private:
     //enums declaring current status of the game or objects
     SettingsButtons SelectedSettingsButton = Settingsnone;
     GameOverButton SelectedGameOverButton = GameOvernone;
+    StatisticsButton SelectedStatisticsButton = Statnone;
     MenuButtons SelectedMenuButton = Menunone;
     Difficulty SelectedDifficulty = Diffnone;
     GameScreen currGameScreen = GamePlay;
-    MusicStatus currMusicStatus = Mute;
+    MusicStatus currMusicStatus = Active;
     GameHud SelectedGameHud = Gamenone;
     WindowSize currWindowSize = large;
     Screen currScreen = menu;
@@ -45,6 +47,11 @@ private:
     Color invalidColor = Color(255, 170, 170, 255);
     Color normalColor = Color::White;
     Color preFilledColor = Color(235, 235, 235, 255);
+    Color TextColor = Color::Black;
+    Color internalGridLinesColor = Color(100, 100, 100, 255);
+    Color ExternalGridLinesColor = Color::Black;
+    Color transparentBlack = Color(0, 0, 0, 0);
+    Color transparentGrey = Color(220, 220, 220, 0);
 
 
     //Music button objects and variables
@@ -56,7 +63,7 @@ private:
     Text timeText;
     
     //Main menu screen objects and variables
-    pair<RectangleShape, Text> MainMenuPlayButton, MainMenuExitButton, MainMenuSettingsButton;
+    pair<RectangleShape, Text> MainMenuPlayButton, MainMenuExitButton, MainMenuSettingsButton, StatisticsButton;
     Text MainMenuSudokuText;
     
     //Difficulty screen objects and variables
@@ -105,8 +112,14 @@ private:
     
     //settings screen related objects and variables
     pair<RectangleShape, Text> WindowSmall, WindowLarge;
-    Text settingsWindowSize, SettingsText;
+    pair<RectangleShape, Text> ThemeDark, ThemeLight;
+    Text settingsWindowSize, SettingsText, ThemeText;
+    bool DarkThemeActive = 1;
 
+    //Statistics screen realted objects and variables
+    fstream StatisticsDatabase;
+    vector<Text> topTenTimes;
+    set<string> TimesSet;
 
     //Globally used objects and variables
     Texture BackArrowText, BackArrowHighlightedText;
@@ -148,6 +161,7 @@ private:
     bool GenerateGrid();
 
     //Initialising functions
+    void initStatisticsDatabase();
     void initSettings();
     void initTextures();
     void initGameOver();
@@ -159,13 +173,16 @@ private:
     void initgrid();
     void initfont();
     void initvar(); 
+    void initAll();
 
     //highlighting functions
+    void highlightStatisticsButton();
     void highlightMenuButton();
     void highlightDiffButton();
     void GameOverHighlight();
     void highlightSettings();
     void highlightGamehud();
+    void removeHighlight();
 
     //Game play related functions
     void highlight(int, int, bool);
@@ -179,6 +196,7 @@ private:
 
     //settings related functions
     void SelectSettingsButton(Vector2f);
+    void ToggleDarkMode(bool);
 
     //difficulty scren related functions
     void initDifficulty();
@@ -187,6 +205,12 @@ private:
     void blurBackground();
     void takeScreenShot();
     bool fadeImage();
+
+    //Statistics related functions
+    void pollStatisticsEvents();
+    void updateStatistics();
+    void renderStatistics();
+    void updateTimes();
 
     //Globally used functions
     bool withinRect(Vector2f, FloatRect);
