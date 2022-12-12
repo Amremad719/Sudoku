@@ -94,7 +94,7 @@ void Game::initMenu()
     //Exit
     MainMenuExitButton.first.setFillColor(normalColor);
     //temporarly Statisticspos because not finished yet supposed to be Exitpos
-    MainMenuExitButton.first.setPosition(Statisticspos);
+    MainMenuExitButton.first.setPosition(Exitpos);
     MainMenuExitButton.first.setSize(Vector2f(200, 70));
     MainMenuExitButton.first.setOutlineThickness(7);
     MainMenuExitButton.first.setOutlineColor(TextColor);
@@ -126,7 +126,7 @@ void Game::initMenu()
     MainMenuExitButton.second.setFillColor(TextColor);
     MainMenuExitButton.second.setCharacterSize(70);
     //temporarly Statisticspos because not finished yet supposed to be Exitpos
-    MainMenuExitButton.second.setPosition(Statisticspos.x + 52, Statisticspos.y - 10);
+    MainMenuExitButton.second.setPosition(Exitpos.x + 52, Exitpos.y - 10);
     MainMenuExitButton.second.setString("Exit");
     MainMenuExitButton.second.setFont(font);
 
@@ -381,18 +381,17 @@ void Game::initTextures()
     MusicTexture.setSmooth(1);
 }
 
-void Game::initMusic() {
-    this->musicBuffer.loadFromFile("Music/music.wav");
+void Game::initSound() {
+    this->ClickSoundBuffer.loadFromFile("Sounds/Click Sound Effect.wav");
+    this->ClickSound.setBuffer(ClickSoundBuffer);
+
+    this->musicBuffer.loadFromFile("Sounds/Music.wav");
     this->Music.setBuffer(musicBuffer);
     this->Music.setLoop(true);
 
-    if (currMusicStatus == Active) Music.play();
-}
+    Music.setVolume(0);
 
-void Game::initStatisticsDatabase()
-{
-    StatisticsDatabase.open("StatisticsDatabase.csv", fstream::app | fstream::in | fstream::out);
-    //cout << StatisticsDatabase.is_open();
+    if (currMusicStatus == Active) Music.play();
 }
 
 void Game::initSettings()
@@ -533,6 +532,75 @@ void Game::initGameOver()
     Quit.second.setPosition(QuitPos.x + 58, QuitPos.y);
 }
 
+void Game::initStatistics()
+{
+//Title
+    StatisticsTitle.setFont(font);
+    StatisticsTitle.setCharacterSize(50);
+    StatisticsTitle.setColor(TextColor);
+    StatisticsTitle.setPosition(192, -7);
+    StatisticsTitle.setString("Statistics");
+    StatisticsTitle.setLetterSpacing(1.8);
+
+    Vector2f Easypos, Mediumpos, Hardpos;
+    Easypos = { 35, 80 };
+    Mediumpos = { Easypos.x + 175, 80 };
+    Hardpos = { Mediumpos.x + 220, 80 };
+
+
+//Easy
+    StatEasy.setFont(font);
+    StatEasy.setCharacterSize(60);
+    StatEasy.setColor(TextColor);
+    StatEasy.setPosition(Easypos);
+    StatEasy.setString("Easy");
+    StatEasy.setLetterSpacing(1.8);
+
+//Medium
+    StatMedium.setFont(font);
+    StatMedium.setCharacterSize(60);
+    StatMedium.setColor(TextColor);
+    StatMedium.setPosition(Mediumpos);
+    StatMedium.setString("Medium");
+    StatMedium.setLetterSpacing(1.8);
+
+//Hard
+    StatHard.setFont(font);
+    StatHard.setCharacterSize(60);
+    StatHard.setColor(TextColor);
+    StatHard.setPosition(Hardpos);
+    StatHard.setString("Hard");
+    StatHard.setLetterSpacing(1.8);
+
+//Grid
+    RectangleShape rect;
+    rect.setSize(Vector2f(160, LineThickness / 2));
+    rect.setFillColor(LineBlue);
+    Vector2f pos = { 10, 217 };
+    for (int j = 0; j < 3; j++)
+    {
+        //do each column
+        for (int i = 0; i < 9; i++)
+        {
+            rect.setPosition(pos);
+            StatGridLines.push_back(rect);
+            pos.y += 60;
+        }
+        //go to next column
+        pos.x += 200;
+        pos.y = 217;
+    }
+    // vertical seperators
+    rect.setSize(Vector2f(LineThickness / 2, 560));
+    rect.setFillColor(LineGreen);
+
+    rect.setPosition({ 189, 180});
+    StatGridLines.push_back(rect);
+
+    rect.setPosition({ 389, 180 });
+    StatGridLines.push_back(rect);
+}
+
 void Game::initAll()
 {
     this->initText();
@@ -541,6 +609,7 @@ void Game::initAll()
     this->initNumbers();
     this->initSettings();
     this->initGameOver();
+    this->initStatistics();
 }
 
 //Highlighters
@@ -1535,31 +1604,39 @@ bool Game::fadeImage()
 
 void Game::updateTimes()
 {
-    //get data from file
-    StatisticsDatabase.sync();
-    string x;
-    while (getline(StatisticsDatabase, x))
+    SelectData(TopTimes);
+
+    text.setFont(font);
+    text.setCharacterSize(48);
+    text.setColor(StatTextColor);
+    Vector2f pos = { 57, 164 };
+    TopTimesText.clear();
+    stringstream ss;
+    for (auto i : TopTimes)
     {
-        TimesSet.insert(x);
-    }
+        for (int k = 0; k < min(9, (int)i.second.size()); k++)
+        {
+            if (!i.second[k]) continue;
+            string j, temp;
 
-    //initialise text
-    text.setCharacterSize(80);
+            ss.clear();
+            ss << i.second[k] / 60;
+            ss >> j;
+            ss.clear();
+            ss << i.second[k] % 60;
+            ss >> temp;
+            j += ":";
+            if (temp.size() < 2) temp.insert(0, "0");
+            j += temp;
 
-    //put the data into the global vector
-    Vector2f pos = { 190, 50 };
-    auto it = TimesSet.begin();
-    for (int i = 0; i < 10 && it != TimesSet.end(); i++, it++) {
-        text.setPosition(pos);
-        string temp;
-        stringstream ss;
-        ss << i + 1;
-        ss >> temp;
-        temp += "- ";
-        temp += *it;
-        text.setString(temp);
-        topTenTimes.push_back(text);
-        pos.y += 100;
+            text.setPosition(pos);
+            text.setString(j);
+            TopTimesText[i.first].push_back(text);
+
+            pos.y += 60;
+        }
+        pos.x += 200;
+        pos.y = 164;
     }
 }
 
@@ -1630,9 +1707,33 @@ void Game::editSquare(string num)
             EmptyCellsRemaining--;
             if (EmptyCellsRemaining <= 0)
             {
-                //Save time
-                string TimeString = timeText.getString();
-                StatisticsDatabase << TimeString << endl;
+                //Add time to database
+                string Table, Column = "Time";
+                switch (SelectedDifficulty)
+                {
+                    case Game::easy:
+                        Table = "Easy";
+                        break;
+                    case Game::medium:
+                        Table = "Medium";
+                        break;
+                    case Game::hard:
+                        Table = "Hard";
+                        break;
+                    default:
+                        break;
+                }
+                string time = timeText.getString();
+                int Value = 0;
+                if (time.size() == 4) {
+                    Value += stoi(time.substr(0, 2));
+                    Value += stoi(time.substr(3, 2));
+                }
+                else {
+                    Value += stoi(time.substr(0, 1));
+                    Value += stoi(time.substr(2, 2));
+                }
+                insertData(Table, Column, Value);
 
                 //update and render new frame before blurring it
                 update();
@@ -1658,10 +1759,6 @@ void Game::editSquare(string num)
         //if enough mistakes made go to game over screen
         if (mistakesMade > 3) 
         {
-            //Save time fo statistics database
-            string TimeString = timeText.getString();
-            StatisticsDatabase << TimeString << endl;
-
             //update and render new frame before blurring it
             update();
 
@@ -1780,36 +1877,53 @@ void Game::takeScreenShot()
     ScreenShot.saveToFile("ScreenShot.png");
 }
 
+//Misc
 void Game::ToggleDarkMode(bool DarkMode)
 {
     internalGridLinesColor = (DarkThemeActive ? Color(100, 100, 100, 255) : Color(100, 100, 100, 255));
+    transparentGrey = (DarkThemeActive ? Color(10, 10, 10, 0) : Color(220, 220, 220, 0));
+    transparentBlack = (DarkThemeActive ? Color(230, 230, 230, 0) : Color(0, 0, 0, 0));
     ExternalGridLinesColor = (DarkThemeActive ? Color(120, 120, 120) : Color::Black);
     highlightColor = (DarkThemeActive ? Color(35, 35, 35) : Color(220, 220, 220));
     preFilledColor = (DarkThemeActive ? Color(20, 20, 20) : Color(235, 235, 235));
+    StatTextColor = (DarkThemeActive ? Color(150, 150, 150) : Color(40, 40, 40));
     NumbersColor = (DarkThemeActive ? Color(10, 10, 10) : Color(220, 220, 220));
     invalidColor = (DarkThemeActive ? Color(75, 30, 30) : Color(255, 170, 170));
     SelectColor = (DarkThemeActive ? Color(35, 35, 35) : Color(190, 190, 190));
+    LineGreen = (DarkThemeActive ? Color(140, 255, 140) : Color(40, 200, 40));
     SelectBlue = (DarkThemeActive ? Color(30, 30, 75) : Color(200, 200, 255));
+    LineBlue = (DarkThemeActive ? Color(140, 140, 255) : Color(40, 40, 200));
     TextColor = (DarkThemeActive ? Color(230, 230, 230) : Color::Black);
     normalColor = (DarkThemeActive ? Color(10, 10, 10) : Color::White);
-    transparentBlack = (DarkThemeActive ? Color(230, 230, 230, 0) : Color(0, 0, 0, 0));
-    transparentGrey = (DarkThemeActive ? Color(10, 10, 10, 0) : Color(220, 220, 220, 0));
-    GridSquares.clear();
-    NumPositions.clear();
-    NumPadNumbers.clear();
-    GridLines.clear();
+
     NumbersCounter.clear();
+    NumPadNumbers.clear();
+    StatGridLines.clear();
+    NumPositions.clear();
+    GridSquares.clear();
+    GridLines.clear();
+
     if (DarkThemeActive) {
+        MusicMutedTexture.loadFromFile("Textures/MusicMutedLight.png");
         BackArrowText.loadFromFile("Textures/ArrowLight.png");
         MusicTexture.loadFromFile("Textures/MusicLight.png");
-        MusicMutedTexture.loadFromFile("Textures/MusicMutedLight.png");
     }
     else {
+        MusicMutedTexture.loadFromFile("Textures/MusicMuted.png");
         BackArrowText.loadFromFile("Textures/Arrow.png");
         MusicTexture.loadFromFile("Textures/Music.png");
-        MusicMutedTexture.loadFromFile("Textures/MusicMuted.png");
     } 
+
     initAll();
+}
+
+bool Game::FadeMusic()
+{
+    float vol = Music.getVolume();
+    float val = 0.5;
+    if (vol + val > 100) return 1;
+    Music.setVolume(min(vol + val, 100.0f));
+    return 0;
 }
 
 // Constructor & Destructor
@@ -1820,9 +1934,9 @@ Game::Game()
     ToggleDarkMode(DarkThemeActive);
     this->initvar();
     this->initwindow();
-    this->initMusic();
+    this->initSound();
     this->initfont();
-    this->initStatisticsDatabase();
+    initDatabase();
 }
 
 Game::~Game()
@@ -1853,6 +1967,7 @@ void Game::pollGamePlayEvents()
                 switch (ev.mouseButton.button)
                 {
                     case Mouse::Left:
+                        ClickSound.play();
                         this->Select(GetMousePos());
                         break;
                 }
@@ -1868,6 +1983,7 @@ void Game::pollGamePlayEvents()
                 }
                 break;
             case Event::KeyPressed:
+                ClickSound.play();
                 switch (ev.key.code) {
                     case Keyboard::Num1:
                     case Keyboard::Numpad1:
@@ -1930,6 +2046,7 @@ void Game::pollGameOverEvents()
                         Final.saveToFile("ScreenShotBlurry.png");
                         break;*/
                     case Mouse::Left:
+                        ClickSound.play();
                         switch (SelectedGameOverButton)
                         {
                             case Game::GameOverPlayAgain:
@@ -1973,6 +2090,7 @@ void Game::pollMenuEvents()
                 switch (ev.mouseButton.button)
                 {
                     case Mouse::Left:
+                        ClickSound.play();
                         switch (SelectedMenuButton)
                         {
                             case Game::play:
@@ -2016,6 +2134,7 @@ void Game::pollDifficultyEvents()
                 switch (ev.mouseButton.button)
                 {
                     case Mouse::Left:
+                        ClickSound.play();
                         switch (SelectedDifficulty)
                         {
                             case Diffnone:
@@ -2071,6 +2190,7 @@ void Game::pollSettingsEvents()
                 switch (ev.mouseButton.button)
                 {
                     case Mouse::Left:
+                        ClickSound.play();
                         switch (SelectedSettingsButton)
                         {
                             case Game::Settingsback:
@@ -2109,6 +2229,7 @@ void Game::pollStatisticsEvents()
                 switch (ev.mouseButton.button)
                 {
                     case Mouse::Left:
+                        ClickSound.play();
                         switch (SelectedStatisticsButton)
                         {
                             case Game::StatBack:
@@ -2189,6 +2310,9 @@ void Game::updateStatistics()
 
 void Game::update()
 {
+    if (!FadeMusicOver) {
+        FadeMusicOver = FadeMusic();
+    }
     switch (currScreen)
     {
         case Game::menu:
@@ -2220,8 +2344,8 @@ void Game::renderMenu()
     this->window->draw(MainMenuSettingsButton.second);
     this->window->draw(MainMenuExitButton.first);
     this->window->draw(MainMenuExitButton.second);
-    /*this->window->draw(StatisticsButton.first);
-    this->window->draw(StatisticsButton.second);*/
+    this->window->draw(StatisticsButton.first);
+    this->window->draw(StatisticsButton.second);
 }
 
 void Game::renderGame()
@@ -2244,8 +2368,20 @@ void Game::renderGame()
 void Game::renderStatistics()
 {
     this->window->draw(BackArrow);
-    for (auto it : topTenTimes) {
+    this->window->draw(StatisticsTitle);
+    this->window->draw(StatEasy);
+    this->window->draw(StatMedium);
+    this->window->draw(StatHard);
+    for (auto it : StatGridLines)
+    {
         this->window->draw(it);
+    }
+    for (auto it : TopTimesText)
+    {
+        for (auto j : it.second)
+        {
+            this->window->draw(j);
+        }
     }
 }
 

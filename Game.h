@@ -6,6 +6,7 @@
 #include "SFML/Audio.hpp"
 #include "SFML/Network.hpp"
 #include "bits/stdc++.h"
+#include "unordered_map"
 
 
 using namespace std;
@@ -40,19 +41,21 @@ private:
     Screen currScreen = menu;
 
     //Colors
-    Color highlightColor = Color(220, 220, 220, 255);
-    Color SelectColor = Color(190, 190, 190, 255);
-    Color NumbersColor = Color(220, 220, 220, 255);
-    Color SelectBlue = Color(200, 200, 255, 255);
-    Color invalidColor = Color(255, 170, 170, 255);
-    Color normalColor = Color::White;
-    Color preFilledColor = Color(235, 235, 235, 255);
-    Color TextColor = Color::Black;
-    Color internalGridLinesColor = Color(100, 100, 100, 255);
-    Color ExternalGridLinesColor = Color::Black;
-    Color transparentBlack = Color(0, 0, 0, 0);
-    Color transparentGrey = Color(220, 220, 220, 0);
-
+    Color internalGridLinesColor;
+    Color ExternalGridLinesColor;
+    Color transparentBlack;
+    Color transparentGrey;
+    Color preFilledColor;
+    Color highlightColor;
+    Color StatTextColor;
+    Color invalidColor;
+    Color NumbersColor;
+    Color SelectColor;
+    Color normalColor;
+    Color SelectBlue;
+    Color LineGreen;
+    Color TextColor;
+    Color LineBlue;
 
     //Music button objects and variables
     Texture MusicTexture, MusicMutedTexture, MusicHighlightedTexture, MusicMutedHighlightedTexture;
@@ -106,9 +109,10 @@ private:
     Event ev;
     
     //sound realted objects and variables
-    SoundBuffer musicBuffer;
-    Sound Music;
+    SoundBuffer musicBuffer, ClickSoundBuffer;
+    Sound Music, ClickSound;
     Sprite MusicIcon;
+    bool FadeMusicOver = 0;
     
     //settings screen related objects and variables
     pair<RectangleShape, Text> WindowSmall, WindowLarge;
@@ -117,9 +121,12 @@ private:
     bool DarkThemeActive = 1;
 
     //Statistics screen realted objects and variables
-    fstream StatisticsDatabase;
-    vector<Text> topTenTimes;
+    Text StatisticsTitle, StatEasy, StatMedium, StatHard;
+    unordered_map<string, vector<Text>> TopTimesText;
+    unordered_map<string, vector<int>> TopTimes;
+    vector<RectangleShape> StatGridLines;
     set<string> TimesSet;
+        
 
     //Globally used objects and variables
     Texture BackArrowText, BackArrowHighlightedText;
@@ -161,13 +168,13 @@ private:
     bool GenerateGrid();
 
     //Initialising functions
-    void initStatisticsDatabase();
+    void initStatistics();
     void initSettings();
     void initTextures();
     void initGameOver();
     void initNumbers();
     void initwindow();
-    void initMusic();
+    void initSound();
     void initMenu();
     void initText();
     void initgrid();
@@ -211,6 +218,9 @@ private:
     void updateStatistics();
     void renderStatistics();
     void updateTimes();
+
+    //Music/Sounds related functions
+    bool FadeMusic();
 
     //Globally used functions
     bool withinRect(Vector2f, FloatRect);
