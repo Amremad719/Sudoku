@@ -26,7 +26,7 @@ private:
     enum GameScreen {GameOver, GameWin, GamePlay};
     enum GameHud {Gameback, Gamemusic, Gamenone};
     enum MusicStatus {Active, Mute};
-    enum WindowSize {small, large};
+    enum WindowSize {Small, large};
 
     //enums declaring current status of the game or objects
     SettingsButtons SelectedSettingsButton = Settingsnone;
@@ -226,6 +226,8 @@ private:
     bool withinRect(Vector2f, FloatRect);
     Vector2f GetMousePos();
     void ToggleMusic();
+    void loadConfig();
+    void saveConfig();
 
 public:
 

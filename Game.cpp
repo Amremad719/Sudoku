@@ -29,13 +29,13 @@ void Game::initwindow()
     //if screen is small open in small window mode
     if (VideoMode::getDesktopMode().height < Height + 100) 
     {
-        currWindowSize = small;
+        currWindowSize = Small;
         WindowSmall.first.setFillColor(SelectColor);
         WindowLarge.first.setFillColor(normalColor);
     }
 
     //if selected window size is small scale the window
-    if (currWindowSize == small) {
+    if (currWindowSize == Small) {
         this->window->setSize(Vector2u(450 + (LineThickness * 7), 450 + (LineThickness * 7) + 125 + gridPadding));
     }
 }
@@ -422,7 +422,7 @@ void Game::initSettings()
     //rectangle
     WindowSmall.first.setOutlineThickness(5);
     WindowSmall.first.setOutlineColor(TextColor);
-    WindowSmall.first.setFillColor((currWindowSize == small ? SelectColor:normalColor));
+    WindowSmall.first.setFillColor((currWindowSize == Small ? SelectColor:normalColor));
     WindowSmall.first.setPosition(pos.x + 300, pos.y + 7);
     WindowSmall.first.setSize(Vector2f(90, 40));
     //text
@@ -863,7 +863,7 @@ void Game::highlight(int indr, int indc, bool remove = 0)
 void Game::highlightDiffButton()
 {
     Vector2f mousePos = GetMousePos();
-    bool withinAnyButton = 0;
+    bool withinAnyButton = false;
 
     //Easy
     if (withinRect(mousePos, Easy.first.getGlobalBounds())) 
@@ -1214,6 +1214,54 @@ void Game::ToggleMusic()
     }
 }
 
+void Game::loadConfig()
+{
+    char* docdir = getenv("USERPROFILE");
+    string dir = docdir;
+    dir += "\\Documents\\Sudoku\\config.cfg";
+   
+    ifstream config(dir);
+
+    string setting;
+
+    config >> setting;
+    if (setting == "large") {
+        currWindowSize = large;
+    }
+    else if (setting == "small") {
+        currWindowSize = Small;
+    }
+
+    config >> setting;
+    if (setting == "yes") {
+        DarkThemeActive = 1;
+    }
+    else if (setting == "no") {
+        DarkThemeActive = 0;
+    }
+
+    config >> setting;
+    if (setting == "active") {
+        currMusicStatus = Active;
+    }
+    else if (setting == "mute") {
+        currMusicStatus = Mute;
+    }
+}
+
+void Game::saveConfig()
+{
+    char* docdir = getenv("USERPROFILE");
+    string dir = docdir;
+    dir += "\\Documents\\Sudoku\\config.cfg";
+
+    ofstream config(dir);
+    
+    config << (currWindowSize == large ? "large" : "small") << endl;
+    config << (DarkThemeActive ? "yes" : "no") << endl;
+    config << (currMusicStatus == Active ? "active" : "mute") << endl;
+}
+
 void Game::removeCells(int Amount)
 {
     const int ogAmount = Amount;
@@ -1221,23 +1269,23 @@ void Game::removeCells(int Amount)
     vector<pair<int, int>> ogProb, prob;
 
     //initialize vector with every cell in grid
-    for (int i = 0; i < 9; i++) 
+    for (int i = 0; i < 9; i++)
     {
-        for (int j = 0; j < 9; j++) 
+        for (int j = 0; j < 9; j++)
         {
             ogProb.push_back({ i, j });
         }
     }
 
     //try to remove cells until found valid one
-    do 
+    do
     {
         //initialize
         prob = ogProb;
         Amount = ogAmount;
         vec = solution;
 
-        while (Amount--) 
+        while (Amount--)
         {
             //if no remaining cells break
             if (!prob.size()) break;
@@ -1250,7 +1298,7 @@ void Game::removeCells(int Amount)
             vec[prob[ind].first][prob[ind].second] = 0;
 
             //if there is no one solution after removing this cell ignore it and try another one
-            if(!checkForOneSultion(vec)) 
+            if (!checkForOneSultion(vec))
             {
                 vec[prob[ind].first][prob[ind].second] = temp;
                 Amount++;
@@ -1262,14 +1310,14 @@ void Game::removeCells(int Amount)
     } while (!checkForOneSultion(vec));
 
     //update changes to live grid
-    for (int i = 0; i < 9; i++) 
+    for (int i = 0; i < 9; i++)
     {
-        for (int j = 0; j < 9; j++) 
+        for (int j = 0; j < 9; j++)
         {
             //count numbers
             NumCount[vec[i][j]]++;
 
-            if (vec[i][j] == 0) 
+            if (vec[i][j] == 0)
             {
                 GridSquares[i][j].second.setString(" ");
             }
@@ -1280,36 +1328,36 @@ void Game::removeCells(int Amount)
 
 void Game::chooseAmountToRemove(enum Difficulty diff)
 {
-    int Amount;
-    if (diff == easy) 
+    int Amount = 0;
+    if (diff == easy)
     {
         vector<int> amounts;
 
         //remove from 25 to 35 cells
-        for (int i = 25; i <= 35; i++) 
+        for (int i = 25; i <= 35; i++)
         {
             amounts.push_back(i);
         }
         Amount = amounts[rand() % amounts.size()];
     }
-    else if (diff == medium) 
+    else if (diff == medium)
     {
         vector<int> amounts;
 
         //remove from 43 to 48 cells
-        for (int i = 43; i <= 48; i++) 
+        for (int i = 43; i <= 48; i++)
         {
             amounts.push_back(i);
         }
         Amount = amounts[rand() % amounts.size()];
     }
 
-    else if (diff == hard) 
+    else if (diff == hard)
     {
         vector<int> amounts;
 
         //remove from 60 to 64 cells
-        for (int i = 60; i <= 64; i++) 
+        for (int i = 60; i <= 64; i++)
         {
             amounts.push_back(i);
         }
@@ -1318,18 +1366,18 @@ void Game::chooseAmountToRemove(enum Difficulty diff)
 
     removeCells(Amount);
     updateCounter();
-    EmptyCellsRemaining = Amount;
     ColorPreFilledCells();
 
     //mark pre filled cells
-    for (int i = 0; i < 9; i++) 
+    for (int i = 0; i < 9; i++)
     {
-        for (int j = 0; j < 9; j++) 
+        for (int j = 0; j < 9; j++)
         {
             if (GridSquares[i][j].second.getString() != " ")
             {
                 isPreFilled[i][j] = 1;
             }
+            else EmptyCellsRemaining++;
         }
     }
 }
@@ -1433,6 +1481,7 @@ void Game::runGame(enum Difficulty diff)
     this->gameTimeCounterClock = new Clock;
 
     mistakesMade = 0;
+    EmptyCellsRemaining = 0;
     memset(NumCount, 0, sizeof(NumCount));
     memset(isPreFilled, 0, sizeof(isPreFilled));
 
@@ -1519,7 +1568,7 @@ void Game::blurBackground()
     blurSprite.setTexture(blurTexture);
 
     //scale according to window size
-    if (currWindowSize == small) 
+    if (currWindowSize == Small) 
     {
         float factorx = Width / (450 + (LineThickness * 7));
         float factory = Height / ((450 + (LineThickness * 7) + 125 + gridPadding));
@@ -1725,12 +1774,12 @@ void Game::editSquare(string num)
                 }
                 string time = timeText.getString();
                 int Value = 0;
-                if (time.size() == 4) {
-                    Value += stoi(time.substr(0, 2));
+                if (time.size() == 5) {
+                    Value += stoi(time.substr(0, 2)) * 60;
                     Value += stoi(time.substr(3, 2));
                 }
                 else {
-                    Value += stoi(time.substr(0, 1));
+                    Value += stoi(time.substr(0, 1)) * 60;
                     Value += stoi(time.substr(2, 2));
                 }
                 insertData(Table, Column, Value);
@@ -1749,8 +1798,8 @@ void Game::editSquare(string num)
                 GameOverText.setCharacterSize(93);
                 GameOverText.setPosition(20, 60);
 
-                GameOverDesc.setString("You completed the Sudoku.");
-                GameOverDesc.setPosition(145, 190);
+                GameOverDesc.setString("You completed the Sudoku in " + timeText.getString());
+                GameOverDesc.setPosition(120, 190);
 
                 currGameScreen = GameOver;
             }
@@ -1778,6 +1827,7 @@ void Game::editSquare(string num)
             GameOverDesc.setPosition(140, 190);
         }
     }
+    
 }
 
 void Game::Select(Vector2f Pos)
@@ -1824,7 +1874,7 @@ void Game::SelectSettingsButton(Vector2f pos)
 {
     if (withinRect(pos, WindowSmall.first.getGlobalBounds())) 
     {
-        currWindowSize = small;
+        currWindowSize = Small;
         WindowSmall.first.setFillColor(SelectColor);
         WindowLarge.first.setFillColor(normalColor);
         this->window->setSize(Vector2u(450 + (LineThickness * 7), 450 + (LineThickness * 7) + 125 + gridPadding));
@@ -1930,6 +1980,7 @@ bool Game::FadeMusic()
 
 Game::Game()
 {
+    loadConfig();
     this->initTextures();
     ToggleDarkMode(DarkThemeActive);
     this->initvar();
@@ -1941,6 +1992,7 @@ Game::Game()
 
 Game::~Game()
 {
+    saveConfig();
     delete this->window;
 }
 

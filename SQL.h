@@ -1,13 +1,27 @@
 #pragma once
 #include "sqlite3.h"
+#include "direct.h"
 using namespace std;
+
 sqlite3* db;
 
 void initDatabase()
 {
 	char* err;
-	sqlite3_open("Best_Times.db", &db);
 
+	//get directory to the user profile
+	char* docdir = getenv("USERPROFILE");
+	string dir = docdir;
+	dir += "\\Documents\\Sudoku";
+
+	//make the folder if not there
+	_mkdir(dir.c_str());
+	dir += "\\Best_Times.db";
+
+	//make / open database
+	sqlite3_open(dir.c_str(), &db);
+
+	//create tables
 	string CreateEasyTable =
 		"CREATE TABLE IF NOT EXISTS Easy(Time INT);";
 	sqlite3_exec(db, CreateEasyTable.c_str(), NULL, 0, &err);
