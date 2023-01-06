@@ -1266,19 +1266,22 @@ void Game::saveConfig()
 void Game::DrawWave()
 {
     VertexArray vert(PrimitiveType::TriangleStrip);
+    VertexArray vert1(PrimitiveType::TriangleStrip);
 
     Transform trans, rotation;
     trans.translate(Vector2f(0, 0));
     rotation.rotate(rot);
 
-    Transform final = trans * rotation;
+    Transform rota = trans * rotation;
 
-    for (int i = -2000; i < 2000; i++)
+    int lenght = ceil(sqrt(pow(window->getSize().x, 2) + pow(window->getSize().y, 2)));
+    for (int i = 0; i < lenght; i++)
     {
         float x = i * freq - WaveOffset;
-        float y = (sin(x * pi / 180) * 100);
-        Vertex a = final.transformPoint(Vector2f(i, y + Thickness));
-        Vertex b = final.transformPoint(Vector2f(i, y - Thickness));
+        float y = (sin(x * pi / 180) * Amp);
+
+        Vertex a = rota.transformPoint(Vector2f(i, y + Thickness));
+        Vertex b = rota.transformPoint(Vector2f(i, y - Thickness));
         a.color = b.color = Color(150, 150, 150);
         vert.append(a);
         vert.append(b);

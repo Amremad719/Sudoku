@@ -135,7 +135,7 @@ private:
     Font font;
     Text text;
     
-    float freq = 0.2, speed = 0.5, rot = 45, WaveOffset = 0, Thickness = 80;
+    float freq = 0.2, speed = 0.5, rot = 45, WaveOffset = 0, Thickness = 80, Amp = 100;
 
 //Functions
 
