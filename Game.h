@@ -80,6 +80,7 @@ private:
     vector<pair<RectangleShape, Text>> NumPadNumbers;
     vector<RectangleShape> GridLines;
     int SelectedNumPadNumber = -1;
+    int nonSelectHIghlightNum = 0;
     vector<vector<int>> solution;
     int EmptyCellsRemaining = 0;
     bool isPreFilled[9][9] = {};
@@ -134,6 +135,8 @@ private:
     Font font;
     Text text;
     
+    float freq = 0.2, speed = 0.5, rot = 45, WaveOffset = 0, Thickness = 80;
+
 //Functions
 
     //Event polling functions
@@ -228,6 +231,7 @@ private:
     void ToggleMusic();
     void loadConfig();
     void saveConfig();
+    void DrawWave();
 
 public:
 

@@ -6,6 +6,8 @@
 using namespace std;
 using namespace sf;
 
+#define pi 3.14159265359
+
 //initializers
 void Game::initvar()
 {
@@ -15,7 +17,7 @@ void Game::initvar()
 
 void Game::initwindow()
 {
-    conSett.antialiasingLevel = 10;
+    conSett.antialiasingLevel = 16;
     
     this->video.height = Height;
     this->video.width = Width;
@@ -69,9 +71,8 @@ void Game::initText()
 
     //mistakes counter in game
     this->Mistakes.setFont(font);
-    this->Mistakes.setPosition(230, -7);
     this->Mistakes.setColor(TextColor);
-    this->Mistakes.setCharacterSize(gridSize / 20);
+    this->Mistakes.setCharacterSize(30);
     this->Mistakes.setPosition(7, gridSize + (LineThickness * 7) - 3 + gridPadding);
 }
 
@@ -851,7 +852,7 @@ void Game::highlight(int indr, int indc, bool remove = 0)
 
                     GridSquares[i][j].first.setFillColor(fillColor);
                 }
-                else if (curr == og && og != " ")
+                else if (curr != " " && curr == og && og != " ")
                 {
                     GridSquares[i][j].first.setFillColor(SelectBlue);
                 }
@@ -1078,10 +1079,10 @@ bool Game::checkForOneSultion(vector<vector<int>> tempSolution)
             //if cell is pre filled continue
             if (tempSolution[i][j]) continue;
             
-            //get available numbers for this cell
+            //get all available numbers for this cell
             bitset<10> inter = rows[i] & columns[j] & squares[i / 3][j / 3];
 
-            //put numbers in vector to be able to choose randomly from them
+            //put numbers in vector to be able to choose from them
             for (int k = 1; k <= 9; k++) 
             {
                 if (inter[k]) 
@@ -1226,10 +1227,10 @@ void Game::loadConfig()
 
     config >> setting;
     if (setting == "large") {
-        currWindowSize = large;
+        //currWindowSize = large;
     }
     else if (setting == "small") {
-        currWindowSize = Small;
+        //currWindowSize = Small;
     }
 
     config >> setting;
@@ -1260,6 +1261,33 @@ void Game::saveConfig()
     config << (currWindowSize == large ? "large" : "small") << endl;
     config << (DarkThemeActive ? "yes" : "no") << endl;
     config << (currMusicStatus == Active ? "active" : "mute") << endl;
+}
+
+void Game::DrawWave()
+{
+    VertexArray vert(PrimitiveType::TriangleStrip);
+
+    Transform trans, rotation;
+    trans.translate(Vector2f(0, 0));
+    rotation.rotate(rot);
+
+    Transform final = trans * rotation;
+
+    for (int i = -2000; i < 2000; i++)
+    {
+        float x = i * freq - WaveOffset;
+        float y = (sin(x * pi / 180) * 100);
+        Vertex a = final.transformPoint(Vector2f(i, y + Thickness));
+        Vertex b = final.transformPoint(Vector2f(i, y - Thickness));
+        a.color = b.color = Color(150, 150, 150);
+        vert.append(a);
+        vert.append(b);
+    }
+
+    WaveOffset += speed;
+    if (WaveOffset >= 360) WaveOffset -= 360;
+
+    window->draw(vert);
 }
 
 void Game::removeCells(int Amount)
@@ -1720,7 +1748,37 @@ void Game::SelectNumber(int ind)
 
     string x;
     x.push_back(ind + 1 + '0');
-    this->editSquare(x);
+    if (SelectedSquare.first == -1) {
+        for (int i = 0; i < 9; i++)
+        {
+            for (int j = 0; j < 9; j++)
+            {
+                string num = GridSquares[i][j].second.getString();
+                Color fillColor;
+                if (num != " " && num == x && ind + 1 != nonSelectHIghlightNum)
+                {
+                    fillColor = SelectBlue;
+                }
+                else
+                {
+                    if (isPreFilled[i][j])
+                    {
+                        fillColor = preFilledColor;
+                    }
+                    else
+                    {
+                        fillColor = normalColor;
+                    }
+                }
+                GridSquares[i][j].first.setFillColor(fillColor);
+            }
+        }
+        if (nonSelectHIghlightNum == ind + 1) nonSelectHIghlightNum = 0;
+        else nonSelectHIghlightNum = ind + 1;
+    }
+    else {
+        this->editSquare(x);
+    }
 
     SelectedNumPadNumber = ind;
 }
@@ -1742,6 +1800,7 @@ void Game::editSquare(string num)
         
         //set new number and highlight appropriate cells
         GridSquares[SelectedSquare.first][SelectedSquare.second].second.setString(num);
+        highlight(SelectedSquare.first, SelectedSquare.second, 1);
         highlight(SelectedSquare.first, SelectedSquare.second);
         
         //if the placed number is invalid increment the mistakes and highlight invalid
@@ -1749,7 +1808,7 @@ void Game::editSquare(string num)
         {
             mistakesMade++;
         }
-        else // else if valid color it and mark it
+        else if(num != " ")// else if valid color it and mark it
         {   
 
             isPreFilled[SelectedSquare.first][SelectedSquare.second] = 1;
@@ -1806,7 +1865,7 @@ void Game::editSquare(string num)
         }
 
         //if enough mistakes made go to game over screen
-        if (mistakesMade > 3) 
+        if (mistakesMade >= 3) 
         {
             //update and render new frame before blurring it
             update();
@@ -1833,6 +1892,7 @@ void Game::editSquare(string num)
 void Game::Select(Vector2f Pos)
 {
     if(SelectedSquare.first != -1) highlight(SelectedSquare.first, SelectedSquare.second, 1);
+    else highlight(0, 0, 1);
     for (int i = 0; i < 9; i++) 
     {
         for (int j = 0; j < 9; j++) 
@@ -1931,20 +1991,20 @@ void Game::takeScreenShot()
 void Game::ToggleDarkMode(bool DarkMode)
 {
     internalGridLinesColor = (DarkThemeActive ? Color(100, 100, 100, 255) : Color(100, 100, 100, 255));
+    NumbersColor = (DarkThemeActive ? Color(10, 10, 10, 200) : Color(220, 220, 220, 200));
+    normalColor = (DarkThemeActive ? Color(10, 10, 10, 200) : Color(255, 255, 255, 180));
+    SelectColor = (DarkThemeActive ? Color(45, 45, 45, 255) : Color(190, 190, 190, 200));
     transparentGrey = (DarkThemeActive ? Color(10, 10, 10, 0) : Color(220, 220, 220, 0));
     transparentBlack = (DarkThemeActive ? Color(230, 230, 230, 0) : Color(0, 0, 0, 0));
     ExternalGridLinesColor = (DarkThemeActive ? Color(120, 120, 120) : Color::Black);
     highlightColor = (DarkThemeActive ? Color(35, 35, 35) : Color(220, 220, 220));
     preFilledColor = (DarkThemeActive ? Color(20, 20, 20) : Color(235, 235, 235));
     StatTextColor = (DarkThemeActive ? Color(150, 150, 150) : Color(40, 40, 40));
-    NumbersColor = (DarkThemeActive ? Color(10, 10, 10) : Color(220, 220, 220));
     invalidColor = (DarkThemeActive ? Color(75, 30, 30) : Color(255, 170, 170));
-    SelectColor = (DarkThemeActive ? Color(35, 35, 35) : Color(190, 190, 190));
     LineGreen = (DarkThemeActive ? Color(140, 255, 140) : Color(40, 200, 40));
     SelectBlue = (DarkThemeActive ? Color(30, 30, 75) : Color(200, 200, 255));
     LineBlue = (DarkThemeActive ? Color(140, 140, 255) : Color(40, 40, 200));
     TextColor = (DarkThemeActive ? Color(230, 230, 230) : Color::Black);
-    normalColor = (DarkThemeActive ? Color(10, 10, 10) : Color::White);
 
     NumbersCounter.clear();
     NumPadNumbers.clear();
@@ -2512,6 +2572,7 @@ void Game::render()
     
     this->window->clear(normalColor);
 
+    DrawWave();
     this->window->draw(MusicIcon);
     switch (currScreen)
     {
