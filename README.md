@@ -17,7 +17,7 @@ Compete with yourself to achieve the best time in each puzzle. The local score l
 
 1. Download and install the game on your device.
 2. Launch the game and select your preferred theme (dark or light).
-3. Choose a difficulty level (easy, medium, hard, expert) for your Sudoku puzzle.
+3. Choose a difficulty level (easy, medium, hard) for your Sudoku puzzle.
 4. Start the game by filling in the empty cells with numbers from 1 to 9, following Sudoku rules.
 6. Continue playing until you complete the puzzle or give up.
 
@@ -32,15 +32,11 @@ Compete with yourself to achieve the best time in each puzzle. The local score l
 
 ## Installation
 
-To install the game, follow these steps:
-
-1. Download the game installation file from [link].
-2. Run the installer and follow the on-screen instructions.
-3. Launch the game and start playing.
+You can install the latest release [here](https://github.com/Amremad719/Sudoku/releases/tag/v1.0.0).
 
 ## Support and Feedback
 
-If you encounter any issues or have suggestions for improving the game, please feel free to [create an issue](link-to-issues) or contact me at [amremadimp@gmail.com].
+If you encounter any issues or have suggestions for improving the game, please feel free to [create an issue](https://github.com/Amremad719/Sudoku/issues) or contact me at [amremadimp@gmail.com].
 
 Enjoy the game and happy Sudoku solving!
 
